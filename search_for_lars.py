@@ -3,7 +3,7 @@ from timeseries import TimeSeries
 import idlsave
 import numpy as np
 
-def search_for_lars(timearray,dir='/Users/ainglis/physics/event_list/lytaf/'):
+def search_for_lars(timearray,dir=''):
 
     lytaf=idlsave.read(dir+'lytaf_sorted.sav')
 
