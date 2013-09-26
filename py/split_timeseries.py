@@ -53,10 +53,13 @@ def split_series_using_lytaf(timearray,data,lar):
             ts=TimeSeries(subtimes,subdata)
             split_series.append(ts)
         if u == nd:
-            subtimes=timearray[g[d[u-1]+1]:g[len(g)-1]]
-            subdata=data[g[d[u-1]+1]:g[len(g)-1]]
-            ts=TimeSeries(subtimes,subdata)
-            split_series.append(ts)
+            if not g[d[u-1]+1] == g[len(g)-1]:
+                subtimes=timearray[g[d[u-1]+1]:g[len(g)-1]]
+                subdata=data[g[d[u-1]+1]:g[len(g)-1]]
+                ts=TimeSeries(subtimes,subdata)
+                split_series.append(ts)
+            else:
+                print 'A LAR occurred near the series end. Some truncation may have occurred.'
         if (0 < u < nd):
             subtimes=timearray[g[d[u-1]]:g[d[u]]]
             subdata=data[g[d[u-1]]:g[d[u]]]
