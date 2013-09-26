@@ -39,6 +39,11 @@ def split_series_using_lytaf(timearray,data,lar):
 
     print d
     print nd
+    if nd == 0:
+        ts=TimeSeries(timearray,data)
+        split_series=[ts]
+        print 'No LARs or pointing anomalies during series interval. Returning original series.'
+        return split_series
     split_series=[]
     #create a list of timeseries objects here
     for u in range(0,nd+1):
