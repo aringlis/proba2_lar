@@ -48,6 +48,7 @@ restore,dir+'lytaf_sorted.sav',/verbose
 ;find the entries in the LYTAF that occur within the given
 ;time array. Want to trim the lytaf first
 n=n_elements(timearray)
+n_lytaf=n_elements(lytaf.start_times)
 
 IF (n eq 1) THEN BEGIN
    print,'Input time must be a vector. Returning -1.'
@@ -65,6 +66,14 @@ lytaf_end1=value_locate(lytaf.end_times,t1) + 10
 
 m0=min([lytaf_st0,lytaf_end0])
 m1=max([lytaf_st1,lytaf_end1])
+
+;make sure we don't end up with illegal subscripts for the LYTAF structure.
+IF (m0 lt 0) THEN BEGIN
+   m0 = 0
+ENDIF
+IF (m1 gt (n_lytaf-1)) THEN BEGIN
+   m1=n_lytaf-1
+ENDIF
 
 a=m1-m0
 mask=fltarr(a)
@@ -85,9 +94,11 @@ endfor
 
 selection=findgen(a) + m0
 ind=where(mask eq 1)
-IF (ind eq -1) THEN BEGIN
-   print,'No pointing events found during specified time interval. Returning -1.'
-   return,-1
+IF (n_elements(ind) eq 1) THEN BEGIN
+   IF (ind eq -1) THEN BEGIN
+      print,'No pointing events found during specified time interval. Returning -1.'
+      return,-1
+   ENDIF
 ENDIF
 
 selection=selection[where(mask eq 1)]
