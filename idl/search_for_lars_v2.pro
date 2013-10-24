@@ -42,18 +42,21 @@ FUNCTION search_for_lars,timearray,dir=dir
 
 default,dir,''
 
-;search for instances of 
+;restore the LYTAF 
 restore,dir+'lytaf_sorted.sav',/verbose
 
-;find the entries in the LYTAF that occur within the given
-;time array. Want to trim the lytaf first
 n=n_elements(timearray)
 n_lytaf=n_elements(lytaf.start_times)
 
+;check for vector input, otherwise return -1
 IF (n eq 1) THEN BEGIN
    print,'Input time must be a vector. Returning -1.'
    return,-1
 ENDIF
+
+;Need to find the entries in the LYTAF that occur within the given
+;time array. Want to trim the lytaf first, rather than looking through
+;all entries
 
 t0=timearray[0]
 t1=timearray[n-1]
@@ -64,6 +67,7 @@ lytaf_st1=value_locate(lytaf.start_times,t1) + 10
 lytaf_end0=value_locate(lytaf.end_times,t0) - 10
 lytaf_end1=value_locate(lytaf.end_times,t1) + 10
 
+;m0 and m1 are indices denoting the range of LYTAF entries to be searched
 m0=min([lytaf_st0,lytaf_end0])
 m1=max([lytaf_st1,lytaf_end1])
 
@@ -78,7 +82,7 @@ ENDIF
 a=m1-m0
 mask=fltarr(a)
 
-;try again. Just want to know if any values of timeseries lie in
+;Search for pointing events. Want to know if any values of timeseries lie in
 ;between the start_ind and the end_ind of any LYTAF event. If so,
 ;include this event in the output.
 
@@ -91,9 +95,10 @@ for j=0, a-1 do begin
    endfor
 endfor
 
-
 selection=findgen(a) + m0
 ind=where(mask eq 1)
+
+;check if anything was found. If not, return -1
 IF (n_elements(ind) eq 1) THEN BEGIN
    IF (ind eq -1) THEN BEGIN
       print,'No pointing events found during specified time interval. Returning -1.'
@@ -101,6 +106,8 @@ IF (n_elements(ind) eq 1) THEN BEGIN
    ENDIF
 ENDIF
 
+;mask denotes which of the LYTAF entries lie within the input
+;timeseries. Select only these entries.
 selection=selection[where(mask eq 1)]
 
 ;find the indices which denote the LAR start and end times within timeseries
@@ -115,26 +122,19 @@ for d=0,n_elements(start_indices)-1 do begin
 endfor
 
 event_type=lytaf.event_type[selection]
-;event_type_ends=lytaf.event_type[selection]
 
-;p0=[where((start_indices_tmp gt -1) AND (start_indices_tmp lt n-1),count_start)]
-;p1=[where((end_indices_tmp gt -1) AND (end_indices_tmp lt n-1),count_end)]
-
-;start_indices=start_indices_tmp
-;end_indices=end_indices_tmp
-
-;start_type=event_type_starts[p0]
-;end_type=event_type_ends[p1]
-
+;get a string descriptor of each event type
 event_type_info=lytaf_event2string(event_type)
 
 
 lar_start_times=lytaf.start_times[selection]
 lar_end_times=lytaf.end_times[selection]
 
+;create the output structure containing all the necessary information
 lars=create_struct('start_indices',start_indices,'end_indices',end_indices,'lar_start_times',lar_start_times,'lar_end_times',lar_end_times,$
 'event_type',event_type,'event_type_info',event_type_info)
-;stop
+
+;return the output structure
 return,lars
 
 END
