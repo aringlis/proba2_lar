@@ -31,6 +31,11 @@
 ;                      a start and end time for a LYTAF event even if
 ;                      the start or the end is outside the bounds of
 ;                      the timeseries.
+;      Andrew Inglis - 2013/10/24 - now returns -1 if no pointing
+;                      events are found within the specified time
+;                      interval.
+;                      - print an error message and return -1 if
+;                        timearray is input as a scalar. 
 ;
 
 FUNCTION search_for_lars,timearray,dir=dir
@@ -43,6 +48,11 @@ restore,dir+'lytaf_sorted.sav',/verbose
 ;find the entries in the LYTAF that occur within the given
 ;time array. Want to trim the lytaf first
 n=n_elements(timearray)
+
+IF (n eq 1) THEN BEGIN
+   print,'Input time must be a vector. Returning -1.'
+   return,-1
+ENDIF
 
 t0=timearray[0]
 t1=timearray[n-1]
