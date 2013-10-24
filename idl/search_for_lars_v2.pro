@@ -74,8 +74,15 @@ endfor
 
 
 selection=findgen(a) + m0
+ind=where(mask eq 1)
+IF (ind eq -1) THEN BEGIN
+   print,'No pointing events found during specified time interval. Returning -1.'
+   return,-1
+ENDIF
+
 selection=selection[where(mask eq 1)]
 
+stop
 
 ;find the indices which denote the LAR start and end times within timeseries
 start_indices=value_locate(timearray,lytaf.start_times[selection])
