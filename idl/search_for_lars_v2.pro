@@ -20,7 +20,7 @@
 ;
 ;OUTPUT:
 ; returns a structure containing the instances of anomalous LYRA
-; events and their type.
+; events and their type. If no events are found, -1 is returned.
 ;
 ;WRITTEN:
 ;      Andrew Inglis - 2013/08/19
