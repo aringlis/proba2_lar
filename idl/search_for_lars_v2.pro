@@ -82,8 +82,6 @@ ENDIF
 
 selection=selection[where(mask eq 1)]
 
-stop
-
 ;find the indices which denote the LAR start and end times within timeseries
 start_indices=value_locate(timearray,lytaf.start_times[selection])
 end_indices=value_locate(timearray,lytaf.end_times[selection])
